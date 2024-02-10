@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::{Subcommand, ValueEnum, ValueHint};
-use dloc_core::serialize::SerializeType as CoreSerializeType;
+use dloc_core::{games::hzd, logger::Logger, serialize::SerializeType as CoreSerializeType};
 
 use super::utils;
 
@@ -38,7 +38,7 @@ pub enum HzdAction {
     /// Export locals from input
     #[command(arg_required_else_help = true)]
     Export {
-        /// Languages to export
+        /// Languages to export, pass 'all' if you want to export everything
         #[arg(num_args = 1)]
         languages: Vec<String>,
         /// This option is only used when serialize-type is Txt
@@ -63,5 +63,22 @@ impl HzdAction {
             Self::Export { .. } => "Export",
             Self::Import { .. } => "Import",
         }
+    }
+}
+
+pub fn parse_hzd_languages(languages: Vec<String>, logger: &mut impl Logger) -> Vec<hzd::Language> {
+    if languages.iter().any(|l| l.eq_ignore_ascii_case("all")) {
+        hzd::Language::ALL_VARIANTS.to_vec()
+    } else {
+        languages
+            .into_iter()
+            .filter_map(|s| match hzd::Language::try_from(s.clone()) {
+                Ok(r) => Some(r),
+                Err(_) => {
+                    logger.warn(format!("Invalid language: {s}"));
+                    None
+                }
+            })
+            .collect()
     }
 }

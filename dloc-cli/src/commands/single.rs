@@ -8,16 +8,12 @@ use std::{
 
 use anyhow::bail;
 use clap::{Parser, ValueHint};
-use dloc_core::{
-    games::hzd::{self, HZDLocal},
-    logger::Logger,
-    serialize::SerializeData,
-};
+use dloc_core::{games::hzd::HZDLocal, logger::Logger, serialize::SerializeData};
 
 use crate::{logger::CliLogger, Game};
 
 use super::{
-    shared::{HzdAction, SerializeType},
+    shared::{parse_hzd_languages, HzdAction, SerializeType},
     utils,
 };
 
@@ -61,16 +57,7 @@ impl Single {
                                 .with_extension(self.serialize_type.extension())
                         });
 
-                        let languages: Vec<_> = languages
-                            .into_iter()
-                            .filter_map(|s| match hzd::Language::try_from(s.clone()) {
-                                Ok(r) => Some(r),
-                                Err(_) => {
-                                    logger.warn(format!("Invalid language: {s}"));
-                                    None
-                                }
-                            })
-                            .collect();
+                        let languages = parse_hzd_languages(languages, &mut logger);
 
                         if languages.is_empty() {
                             bail!("Didn't found any valid Language.");
