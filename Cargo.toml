@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+package.authors = ["Gameside <s.gamesides@gmail.com>"]
+package.edition = "2021"
+
+members = [ "dloc-cli","dloc-core" ]
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+opt-level = "s"
+strip = "symbols"
