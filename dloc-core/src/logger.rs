@@ -1,3 +1,5 @@
+//! [`Logger`] and [`Progress`] traits.
+
 use std::marker::PhantomData;
 
 pub trait Logger {

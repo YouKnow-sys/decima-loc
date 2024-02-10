@@ -1,3 +1,5 @@
+//! [`Error`] and [`Result`](DResult) types
+
 use thiserror::Error;
 
 pub type DResult<T> = Result<T, Error>;
