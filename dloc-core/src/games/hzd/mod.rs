@@ -1,3 +1,5 @@
+//! Horizon Zero Dawn
+
 use std::{
     fmt::{Debug, Display},
     io::{Read, Seek, Write},
