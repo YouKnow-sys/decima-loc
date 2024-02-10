@@ -15,7 +15,7 @@ pub fn print_languages(game: Game, mut logger: CliLogger) -> anyhow::Result<()> 
         }
         Game::Hzd => {
             let languages = hzd::Language::ALL_VARIANTS.into_iter().fold(
-                String::from("HZD supported languages:\n"),
+                String::from("Horizon Zero Dawn supported languages:\n"),
                 |mut s, v| {
                     let _ = writeln!(s, "  - {v}");
                     s
@@ -25,7 +25,7 @@ pub fn print_languages(game: Game, mut logger: CliLogger) -> anyhow::Result<()> 
         }
         Game::Ds => {
             let languages = ds::Language::ALL_VARIANTS.into_iter().fold(
-                String::from("HZD supported languages:\n"),
+                String::from("Death Stranding supported languages:\n"),
                 |mut s, v| {
                     let _ = writeln!(s, "  - {v}");
                     s
