@@ -12,6 +12,8 @@ use crate::{utils::enum_map, DResult, Error};
 
 use structures::Chunk;
 
+pub(crate) use structures::LOCALIZED_MAGIC;
+
 use error::DSError;
 use structures::ChunkVariants;
 

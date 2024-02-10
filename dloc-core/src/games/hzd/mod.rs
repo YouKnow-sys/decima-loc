@@ -16,6 +16,8 @@ use crate::{
 use error::HZDError;
 use structures::{Chunk, ChunkVariants, CutsceneStringGroup};
 
+pub(crate) use structures::{CUTSCENE_MAGIC, LOCALIZED_MAGIC};
+
 mod error;
 #[cfg(feature = "serialize")]
 mod serialize;

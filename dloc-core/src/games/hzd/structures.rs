@@ -12,6 +12,9 @@ use crate::{
 
 use super::{FixedMap, Language};
 
+pub const LOCALIZED_MAGIC: u64 = 0xB89A596B420BB2E2;
+pub const CUTSCENE_MAGIC: u64 = 0x5A3ECD4ADA693D7F;
+
 pub type Chunk = crate::games::chunks::Chunk<ChunkVariants>;
 
 /// Represents the possible variants for a Chunk, which contains either
@@ -23,9 +26,9 @@ pub type Chunk = crate::games::chunks::Chunk<ChunkVariants>;
 #[br(import(magic: u64, size: u32))]
 #[derive(Hash)]
 pub enum ChunkVariants {
-    #[br(pre_assert(magic == 0xB89A596B420BB2E2))]
+    #[br(pre_assert(magic == LOCALIZED_MAGIC))]
     Localized(Box<Localized>),
-    #[br(pre_assert(magic == 0x5A3ECD4ADA693D7F))]
+    #[br(pre_assert(magic == CUTSCENE_MAGIC))]
     Cutscene(Box<Cutscene>),
     /// Data variant for unknown chunk data.
     /// Stores raw binary data.

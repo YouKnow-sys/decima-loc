@@ -1,9 +1,9 @@
-use std::path::PathBuf;
+use std::{fs::File, io::BufReader, path::PathBuf};
 
 use anyhow::bail;
 use clap::{Parser, ValueHint};
 use dloc_core::{
-    games::{ds::DSLocal, hzd::HZDLocal},
+    games::{detect, ds::DSLocal, hzd::HZDLocal},
     logger::Logger,
     serialize::DecimaGroup,
 };
@@ -31,6 +31,32 @@ pub struct Group {
 
 impl Group {
     pub fn command(self, game: Game, mut logger: CliLogger) -> anyhow::Result<()> {
+        let game = match game {
+            Game::Auto => {
+                let Some(path) = std::fs::read_dir(&self.input_dir)?.flatten().find(|d| {
+                    let path = d.path();
+                    path.is_file()
+                        .then(|| {
+                            path.extension()
+                                .is_some_and(|e| e.eq_ignore_ascii_case("core"))
+                        })
+                        .is_some()
+                }) else {
+                    bail!("Can't find any core file in input folder to use in auto detect.");
+                };
+
+                let mut reader = BufReader::new(File::open(path.path())?);
+                match detect::detect_game(&mut reader)? {
+                    detect::GameDetection::Hzd => Game::Hzd,
+                    detect::GameDetection::Ds => Game::Ds,
+                    detect::GameDetection::Mixed => bail!("Found mixed magic in input core."),
+                    detect::GameDetection::Unknown => bail!("Failed to detect any supported game."),
+                }
+            }
+            Game::Hzd => Game::Hzd,
+            Game::Ds => Game::Ds,
+        };
+
         logger.info(format!("Selected game: {game:#?}"));
         logger.info(format!("Selected action: {}", self.action.name()));
 
@@ -127,6 +153,7 @@ impl Group {
                     )?;
                 }
             },
+            Game::Auto => unreachable!(),
         }
 
         Ok(())

@@ -9,7 +9,7 @@ use std::{
 use anyhow::bail;
 use clap::{Parser, ValueHint};
 use dloc_core::{
-    games::{ds::DSLocal, hzd::HZDLocal},
+    games::{detect, ds::DSLocal, hzd::HZDLocal},
     logger::Logger,
     serialize::SerializeData,
 };
@@ -38,6 +38,20 @@ pub struct Single {
 
 impl Single {
     pub fn command(self, game: Game, mut logger: CliLogger) -> anyhow::Result<()> {
+        let game = match game {
+            Game::Auto => {
+                let mut reader = BufReader::new(File::open(&self.input_core)?);
+                match detect::detect_game(&mut reader)? {
+                    detect::GameDetection::Hzd => Game::Hzd,
+                    detect::GameDetection::Ds => Game::Ds,
+                    detect::GameDetection::Mixed => bail!("Found mixed magic in input core."),
+                    detect::GameDetection::Unknown => bail!("Failed to detect any supported game."),
+                }
+            }
+            Game::Hzd => Game::Hzd,
+            Game::Ds => Game::Ds,
+        };
+
         logger.info(format!("Selected game: {game:#?}"));
         logger.info(format!("Selected action: {}", self.action.name()));
 
@@ -178,6 +192,7 @@ impl Single {
                     }
                 }
             }
+            Game::Auto => unreachable!(),
         }
 
         Ok(())

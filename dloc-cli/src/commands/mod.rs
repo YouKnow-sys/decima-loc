@@ -10,8 +10,10 @@ mod utils;
 
 #[derive(Clone, Copy, Debug, Default, ValueEnum, PartialEq, Eq)]
 pub enum Game {
-    /// Horizon zero dawn
+    /// Try to auto detect the game from input
     #[default]
+    Auto,
+    /// Horizon zero dawn
     #[value(alias = "HorizonZeroDown")]
     Hzd,
     /// Death stranding

@@ -8,6 +8,11 @@ use super::Game;
 
 pub fn print_languages(game: Game, mut logger: CliLogger) -> anyhow::Result<()> {
     match game {
+        Game::Auto => {
+            logger.stdout.write_all(
+                "Auto can't be used in language command, input the game directly.".as_bytes(),
+            )?;
+        }
         Game::Hzd => {
             let languages = hzd::Language::ALL_VARIANTS.into_iter().fold(
                 String::from("HZD supported languages:\n"),
