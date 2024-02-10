@@ -1,15 +1,17 @@
-# Decima localization manager
-
-[![Build Status](https://github.com/YouKnow-sys/decima-loc/actions/workflows/rust.yml/badge.svg)](https://github.com/YouKnow-sys/decima-loc/actions?workflow=Rust%20CI)
-[![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
-[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/YouKnow-sys/ar-reshaper/blob/master/LICENSE)
-
 <h1 align="center">Decima Localization Manager</h1>
 
 <p align="center">
   <b>Localization management tool for games built on the Decima engine</b></br>
   <sub>Exports and imports game text in various formats for easy localization</sub>
 </p>
+
+<div align="center">
+  
+[![Build Status](https://github.com/YouKnow-sys/decima-loc/actions/workflows/rust.yml/badge.svg)](https://github.com/YouKnow-sys/decima-loc/actions?workflow=Rust%20CI)
+[![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/YouKnow-sys/ar-reshaper/blob/master/LICENSE)
+
+</div>
 
 <p align="center">
   <a href="#features">Features</a> •
