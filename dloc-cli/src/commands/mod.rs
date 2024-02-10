@@ -2,6 +2,8 @@ use clap::{Subcommand, ValueEnum};
 
 use crate::logger::CliLogger;
 
+pub use shared::SerializeType;
+
 mod group;
 mod languages;
 mod shared;
@@ -45,19 +47,19 @@ pub enum LogLevel {
 #[derive(Debug, Subcommand)]
 #[command(arg_required_else_help = true)]
 pub enum Commands {
+    /// See supported languages for each game
+    Languages,
     /// Extract or import strings from a single core file
     Single(single::Single),
     /// Extract or import strings from a group of core files
     Group(group::Group),
-    /// See supported languages for each game
-    Languages,
 }
 
 impl Commands {
-    pub fn command(self, game: Game, logger: CliLogger) -> anyhow::Result<()> {
+    pub fn command(self, game: Game, sert: SerializeType, logger: CliLogger) -> anyhow::Result<()> {
         match self {
-            Commands::Single(c) => c.command(game, logger),
-            Commands::Group(c) => c.command(game, logger),
+            Commands::Single(c) => c.command(game, sert, logger),
+            Commands::Group(c) => c.command(game, sert, logger),
             Commands::Languages => languages::print_languages(game, logger),
         }
     }

@@ -11,8 +11,8 @@ use dloc_core::{
 use crate::{logger::CliLogger, Game};
 
 use super::{
-    shared::{parse_ds_languages, parse_hzd_languages, Action, SerializeType},
-    utils,
+    shared::{parse_ds_languages, parse_hzd_languages, Action},
+    utils, SerializeType,
 };
 
 #[derive(Debug, Parser)]
@@ -20,9 +20,6 @@ pub struct Group {
     /// Input folder that have all the core files inside it
     #[arg(value_hint = ValueHint::DirPath, value_parser = utils::is_dir)]
     input_dir: PathBuf,
-    /// Serialize type to use
-    #[arg(value_enum, default_value_t = SerializeType::default())]
-    serialize_type: SerializeType,
     /// Output file
     output: Option<PathBuf>,
     #[command(subcommand)]
@@ -30,7 +27,12 @@ pub struct Group {
 }
 
 impl Group {
-    pub fn command(self, game: Game, mut logger: CliLogger) -> anyhow::Result<()> {
+    pub fn command(
+        self,
+        game: Game,
+        sert: SerializeType,
+        mut logger: CliLogger,
+    ) -> anyhow::Result<()> {
         let game = match game {
             Game::Auto => {
                 let Some(path) = std::fs::read_dir(&self.input_dir)?.flatten().find(|d| {
@@ -66,10 +68,9 @@ impl Group {
                     languages,
                     add_language_names,
                 } => {
-                    let output = self.output.unwrap_or_else(|| {
-                        self.input_dir
-                            .with_extension(self.serialize_type.extension())
-                    });
+                    let output = self
+                        .output
+                        .unwrap_or_else(|| self.input_dir.with_extension(sert.extension()));
 
                     let languages = parse_hzd_languages(languages, &mut logger);
 
@@ -79,11 +80,11 @@ impl Group {
 
                     logger.info(format!("Selected languages: {languages:?}"));
 
-                    let serialize_type = self.serialize_type.to_core(Some(add_language_names));
+                    let serialize_type = sert.to_core(Some(add_language_names));
 
                     logger.info(format!(
                         "Serializing locals into {:?} format.",
-                        self.serialize_type
+                        serialize_type
                     ));
 
                     DecimaGroup::<HZDLocal, _>::new(self.input_dir, logger)?.export(
@@ -103,7 +104,7 @@ impl Group {
                     DecimaGroup::<HZDLocal, _>::new(self.input_dir, logger)?.import(
                         exported_file,
                         output,
-                        self.serialize_type.to_core(None),
+                        sert.to_core(None),
                     )?;
                 }
             },
@@ -112,10 +113,9 @@ impl Group {
                     languages,
                     add_language_names,
                 } => {
-                    let output = self.output.unwrap_or_else(|| {
-                        self.input_dir
-                            .with_extension(self.serialize_type.extension())
-                    });
+                    let output = self
+                        .output
+                        .unwrap_or_else(|| self.input_dir.with_extension(sert.extension()));
 
                     let languages = parse_ds_languages(languages, &mut logger);
 
@@ -125,12 +125,9 @@ impl Group {
 
                     logger.info(format!("Selected languages: {languages:?}"));
 
-                    let serialize_type = self.serialize_type.to_core(Some(add_language_names));
+                    let serialize_type = sert.to_core(Some(add_language_names));
 
-                    logger.info(format!(
-                        "Serializing locals into {:?} format.",
-                        self.serialize_type
-                    ));
+                    logger.info(format!("Serializing locals into {:?} format.", sert));
 
                     DecimaGroup::<DSLocal, _>::new(self.input_dir, logger)?.export(
                         output,
@@ -149,7 +146,7 @@ impl Group {
                     DecimaGroup::<DSLocal, _>::new(self.input_dir, logger)?.import(
                         exported_file,
                         output,
-                        self.serialize_type.to_core(None),
+                        sert.to_core(None),
                     )?;
                 }
             },

@@ -27,9 +27,6 @@ pub struct Single {
     /// Input core file
     #[arg(value_hint = ValueHint::FilePath, value_parser = utils::is_file)]
     input_core: PathBuf,
-    /// Serialize type to use
-    #[arg(value_enum, default_value_t = SerializeType::default())]
-    serialize_type: SerializeType,
     /// Output file
     output: Option<PathBuf>,
     #[command(subcommand)]
@@ -37,7 +34,12 @@ pub struct Single {
 }
 
 impl Single {
-    pub fn command(self, game: Game, mut logger: CliLogger) -> anyhow::Result<()> {
+    pub fn command(
+        self,
+        game: Game,
+        sert: SerializeType,
+        mut logger: CliLogger,
+    ) -> anyhow::Result<()> {
         let game = match game {
             Game::Auto => {
                 let mut reader = BufReader::new(File::open(&self.input_core)?);
@@ -70,10 +72,9 @@ impl Single {
                         languages,
                         add_language_names,
                     } => {
-                        let output = self.output.unwrap_or_else(|| {
-                            self.input_core
-                                .with_extension(self.serialize_type.extension())
-                        });
+                        let output = self
+                            .output
+                            .unwrap_or_else(|| self.input_core.with_extension(sert.extension()));
 
                         let languages = parse_hzd_languages(languages, &mut logger);
 
@@ -83,12 +84,9 @@ impl Single {
 
                         logger.info(format!("Selected languages: {languages:?}"));
 
-                        let serialize_type = self.serialize_type.to_core(Some(add_language_names));
+                        let serialize_type = sert.to_core(Some(add_language_names));
 
-                        logger.info(format!(
-                            "Serializing locals into {:?} format.",
-                            self.serialize_type
-                        ));
+                        logger.info(format!("Serializing locals into {:?} format.", sert));
                         game.serialize(output, languages, serialize_type)?;
                         logger.good("Serialization finished successfully.")
                     }
@@ -105,10 +103,7 @@ impl Single {
                         let hash_before = hasher.finish();
 
                         logger.info("Deserializing and updating local files.");
-                        game.deserialize_and_update(
-                            exported_file,
-                            self.serialize_type.to_core(None),
-                        )?;
+                        game.deserialize_and_update(exported_file, sert.to_core(None))?;
                         logger.good("Deerialization and update finished.");
 
                         let mut hasher = DefaultHasher::new();
@@ -136,10 +131,9 @@ impl Single {
                         languages,
                         add_language_names,
                     } => {
-                        let output = self.output.unwrap_or_else(|| {
-                            self.input_core
-                                .with_extension(self.serialize_type.extension())
-                        });
+                        let output = self
+                            .output
+                            .unwrap_or_else(|| self.input_core.with_extension(sert.extension()));
 
                         let languages = parse_ds_languages(languages, &mut logger);
 
@@ -149,12 +143,9 @@ impl Single {
 
                         logger.info(format!("Selected languages: {languages:?}"));
 
-                        let serialize_type = self.serialize_type.to_core(Some(add_language_names));
+                        let serialize_type = sert.to_core(Some(add_language_names));
 
-                        logger.info(format!(
-                            "Serializing locals into {:?} format.",
-                            self.serialize_type
-                        ));
+                        logger.info(format!("Serializing locals into {:?} format.", sert));
                         game.serialize(output, languages, serialize_type)?;
                         logger.good("Serialization finished successfully.")
                     }
@@ -171,10 +162,7 @@ impl Single {
                         let hash_before = hasher.finish();
 
                         logger.info("Deserializing and updating local files.");
-                        game.deserialize_and_update(
-                            exported_file,
-                            self.serialize_type.to_core(None),
-                        )?;
+                        game.deserialize_and_update(exported_file, sert.to_core(None))?;
                         logger.good("Deerialization and update finished.");
 
                         let mut hasher = DefaultHasher::new();

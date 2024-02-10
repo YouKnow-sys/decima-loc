@@ -40,10 +40,9 @@ impl SerializeType {
 #[derive(Debug, Subcommand)]
 pub enum Action {
     /// Export locals from input
-    #[command(arg_required_else_help = true)]
     Export {
         /// Languages to export, pass 'all' if you want to export everything
-        #[arg(num_args = 1)]
+        #[arg(short, long, num_args = 1, default_values_t = ["all".to_owned()])]
         languages: Vec<String>,
         /// This option is only used when serialize-type is Txt
         #[arg(short, long)]
