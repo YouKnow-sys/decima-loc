@@ -60,6 +60,7 @@ impl Display for Language {
     }
 }
 
+/// LocalResource represents a resource loaded from the game files.
 #[derive(Debug, Clone)]
 pub struct LocalResource {
     /// Original index of resource
@@ -67,6 +68,8 @@ pub struct LocalResource {
     pub strings: FixedMap<String>,
 }
 
+/// DSLocal is used to load localization resources from Death Stranding
+/// and store them.
 #[derive(Debug, Hash)]
 pub struct DSLocal {
     chunks: Vec<Chunk>,

@@ -1,4 +1,4 @@
-//! [`Error`] and [`Result`](DResult) types
+//! [`Error`](self::Error) and [`Result`](self::DResult) types
 
 use thiserror::Error;
 
