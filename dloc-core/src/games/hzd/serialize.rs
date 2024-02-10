@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     error::DResult,
     serialize::private::{
-        InternalDataSerializer, InternalGroupExtractor, InternalSerializerBase,
-        InternalTxtDataSerializer,
+        InternalDataSerializer, InternalGroupExtractor, InternalPlainTextDataSerializer,
+        InternalSerializerBase,
     },
 };
 
@@ -165,7 +165,7 @@ pub struct TxtDeInfo {
     info: Vec<TxtLocalInfo>,
 }
 
-impl InternalTxtDataSerializer for HZDLocal {
+impl InternalPlainTextDataSerializer for HZDLocal {
     type DeserializeInfo = TxtDeInfo;
 
     fn internal_serialize_to_lines(
@@ -260,12 +260,18 @@ impl InternalTxtDataSerializer for HZDLocal {
                 });
             };
 
+            assert_eq!(
+                lines.len(), deinfo.languages.len() * lines.len().saturating_div(deinfo.languages.len()),
+                "range of lines doesn't match with languages count, did you changed something in deinfo file?"
+            );
+
             match (info.variant, &mut chunk.variant) {
                 (TxtLocalVariants::Localized, ChunkVariants::Localized(oloc)) => {
                     for (lang, line) in deinfo.languages.iter().zip(lines) {
                         oloc.strings[*lang] = if deinfo.add_language_names {
-                            line.strip_prefix((lang.to_string() + ":: ").as_str())
+                            line.strip_prefix((lang.to_string() + "::").as_str())
                                 .unwrap_or_else(|| line)
+                                .trim_start()
                         } else {
                             line
                         }

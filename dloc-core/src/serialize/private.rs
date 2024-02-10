@@ -13,7 +13,7 @@ use crate::error::DResult;
 
 /// In order for a game to be usable in group extractor and importer it should
 /// impl this trait.
-pub trait InternalGroupExtractor: InternalDataSerializer + InternalTxtDataSerializer {
+pub trait InternalGroupExtractor: InternalDataSerializer + InternalPlainTextDataSerializer {
     fn internal_new(reader: BufReader<File>) -> DResult<Self>;
     fn internal_write(&self, writer: BufWriter<File>) -> DResult<()>;
 }
@@ -41,7 +41,7 @@ pub trait InternalDataSerializer: InternalSerializerBase {
 /// Serializes and Deserialize data to and from a vector of lines and
 /// additional deserialize information. Used for human-readable text
 /// serialization.
-pub trait InternalTxtDataSerializer: InternalSerializerBase {
+pub trait InternalPlainTextDataSerializer: InternalSerializerBase {
     type DeserializeInfo: Serialize + DeserializeOwned;
 
     fn internal_serialize_to_lines(
@@ -49,6 +49,7 @@ pub trait InternalTxtDataSerializer: InternalSerializerBase {
         languages: &[Self::Language],
         add_language_names: bool,
     ) -> (Vec<String>, Self::DeserializeInfo);
+
     fn internal_deserialize_and_update_from_lines(
         &mut self,
         lines: &[String],

@@ -2,8 +2,8 @@
 
 | Game name          | Status        |
 | -------------      | ------------- |
-| Horizon Zero Dawn  | Done ✅     |
-| Death Stranding    | Todo 🟦       |
+| Horizon Zero Dawn  | Done ✅       |
+| Death Stranding    | Done ✅       |
 
 ## Features:
 * Export and import locals to and in:

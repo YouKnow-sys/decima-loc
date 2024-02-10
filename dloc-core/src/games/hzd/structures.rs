@@ -2,26 +2,17 @@ use std::{fmt::Debug, mem::size_of};
 
 use binrw::binrw;
 
-use crate::utils::{
-    types::{U16String, U8String},
-    EnumKey,
+use crate::{
+    games::chunks::RuntimeSize,
+    utils::{
+        types::{U16String, U8String},
+        EnumKey,
+    },
 };
 
 use super::{FixedMap, Language};
 
-/// Represents a chunk of binary data with a magic number, size, and variant
-/// payload. Used for serialized game data.
-#[binrw]
-#[brw(little)]
-#[derive(Debug, Hash)]
-pub struct Chunk {
-    magic: u64,
-    #[br(temp)]
-    #[bw(calc = variant.rt_size())]
-    size: u32,
-    #[br(args(magic, size))]
-    pub variant: ChunkVariants,
-}
+pub type Chunk = crate::games::chunks::Chunk<ChunkVariants>;
 
 /// Represents the possible variants for a Chunk, which contains either
 /// localized text data, cutscene data, or unknown data. The variant is
@@ -47,9 +38,19 @@ pub enum ChunkVariants {
 impl ChunkVariants {
     pub const fn name(&self) -> &'static str {
         match self {
-            ChunkVariants::Localized(_) => "Localized",
-            ChunkVariants::Cutscene(_) => "Cutscene",
-            ChunkVariants::Others { .. } => "Others",
+            Self::Localized(_) => "Localized",
+            Self::Cutscene(_) => "Cutscene",
+            Self::Others { .. } => "Others",
+        }
+    }
+}
+
+impl RuntimeSize for ChunkVariants {
+    fn rt_size(&self) -> u32 {
+        match self {
+            Self::Localized(loc) => loc.rt_size(),
+            Self::Cutscene(cut) => cut.rt_size(),
+            Self::Others { data } => data.len() as u32,
         }
     }
 }
@@ -67,17 +68,6 @@ impl Debug for ChunkVariants {
     }
 }
 
-impl ChunkVariants {
-    /// Caculate and return the variant size in runtime.
-    fn rt_size(&self) -> u32 {
-        match self {
-            ChunkVariants::Localized(loc) => loc.rt_size(),
-            ChunkVariants::Cutscene(cut) => cut.rt_size(),
-            ChunkVariants::Others { data } => data.len() as u32,
-        }
-    }
-}
-
 #[binrw]
 #[brw(little)]
 #[derive(Hash)]
@@ -86,7 +76,7 @@ pub struct Localized {
     pub strings: FixedMap<U8String>,
 }
 
-impl Localized {
+impl RuntimeSize for Localized {
     fn rt_size(&self) -> u32 {
         (self.uuid.len()
             + self
@@ -121,7 +111,7 @@ pub struct Cutscene {
     unk: [u8; 5],
 }
 
-impl Cutscene {
+impl RuntimeSize for Cutscene {
     fn rt_size(&self) -> u32 {
         let other_sizes = self.uuid.len()
             + (self.useless_block_len as usize + 4) // u32 + usless_block

@@ -1,6 +1,6 @@
 use std::{fmt::Write, io::Write as _};
 
-use dloc_core::games::hzd;
+use dloc_core::games::{ds, hzd};
 
 use crate::logger::CliLogger;
 
@@ -18,7 +18,16 @@ pub fn print_languages(game: Game, mut logger: CliLogger) -> anyhow::Result<()> 
             );
             logger.stdout.write_all(languages.as_bytes())?;
         }
-        Game::Ds => unimplemented!(),
+        Game::Ds => {
+            let languages = ds::Language::ALL_VARIANTS.into_iter().fold(
+                String::from("HZD supported languages:\n"),
+                |mut s, v| {
+                    let _ = writeln!(s, "  - {v}");
+                    s
+                },
+            );
+            logger.stdout.write_all(languages.as_bytes())?;
+        }
     }
 
     Ok(())

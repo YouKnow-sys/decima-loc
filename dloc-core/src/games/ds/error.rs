@@ -1,17 +1,9 @@
 use thiserror::Error;
 
-use super::Language;
-
 #[derive(Debug, Error)]
-pub enum HZDError {
+pub enum DSError {
     #[error("Found Invalid index when tried to update local resource, max resource: {max}, but found: {got}")]
     InvalidLocalResourceIdx { max: usize, got: usize },
-    #[error("Cutscene lines for language {lang} doesn't match with original, expected {expected} got {got}")]
-    CutsceneLinesDoesntMatch {
-        lang: Language,
-        expected: usize,
-        got: usize,
-    },
     #[error("Resource not match at index, input is {input} but original is {original}")]
     ResourceNotMatchAtIdx {
         input: &'static str,

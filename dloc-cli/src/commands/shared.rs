@@ -1,7 +1,11 @@
 use std::path::PathBuf;
 
 use clap::{Subcommand, ValueEnum, ValueHint};
-use dloc_core::{games::hzd, logger::Logger, serialize::SerializeType as CoreSerializeType};
+use dloc_core::{
+    games::{ds, hzd},
+    logger::Logger,
+    serialize::SerializeType as CoreSerializeType,
+};
 
 use super::utils;
 
@@ -34,7 +38,7 @@ impl SerializeType {
 }
 
 #[derive(Debug, Subcommand)]
-pub enum HzdAction {
+pub enum Action {
     /// Export locals from input
     #[command(arg_required_else_help = true)]
     Export {
@@ -57,7 +61,7 @@ pub enum HzdAction {
     },
 }
 
-impl HzdAction {
+impl Action {
     pub const fn name(&self) -> &'static str {
         match self {
             Self::Export { .. } => "Export",
@@ -70,15 +74,27 @@ pub fn parse_hzd_languages(languages: Vec<String>, logger: &mut impl Logger) -> 
     if languages.iter().any(|l| l.eq_ignore_ascii_case("all")) {
         hzd::Language::ALL_VARIANTS.to_vec()
     } else {
-        languages
-            .into_iter()
-            .filter_map(|s| match hzd::Language::try_from(s.clone()) {
-                Ok(r) => Some(r),
-                Err(_) => {
-                    logger.warn(format!("Invalid language: {s}"));
-                    None
-                }
-            })
-            .collect()
+        parse_languages(languages, logger)
     }
+}
+
+pub fn parse_ds_languages(languages: Vec<String>, logger: &mut impl Logger) -> Vec<ds::Language> {
+    if languages.iter().any(|l| l.eq_ignore_ascii_case("all")) {
+        ds::Language::ALL_VARIANTS.to_vec()
+    } else {
+        parse_languages(languages, logger)
+    }
+}
+
+fn parse_languages<T: TryFrom<String>>(languages: Vec<String>, logger: &mut impl Logger) -> Vec<T> {
+    languages
+        .into_iter()
+        .filter_map(|s| match T::try_from(s.clone()) {
+            Ok(r) => Some(r),
+            Err(_) => {
+                logger.warn(format!("Invalid language: {s}"));
+                None
+            }
+        })
+        .collect()
 }

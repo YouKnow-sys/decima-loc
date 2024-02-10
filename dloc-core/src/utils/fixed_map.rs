@@ -207,7 +207,13 @@ pub(crate) use count;
 
 /// A helper macro to generate a Enum map.
 macro_rules! enum_map {
-    ($(#[doc = $comment:literal])? $(#[derive($($derive_name:ident),+)])? $name:ident; $($variant_name:ident = $idx:literal),+ $(,)?) => {
+    (
+        $(#[doc = $comment:literal])?
+        $(#[derive($($derive_name:ident),+)])?
+        $name:ident;
+        $($variant_name:ident = $idx:literal),+
+        $(,)?
+    ) => {
         $(#[doc = $comment])?
         #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, $($($derive_name),+)?)]
         #[repr(u8)] // its all built-in so Im sure I nver need anything bigger then this...
@@ -249,11 +255,11 @@ macro_rules! enum_map {
             }
         }
 
-        impl EnumKey for $name {
+        impl $crate::utils::EnumKey for $name {
             const LEN: usize = $crate::utils::count!($($idx)*);
         }
 
-        type FixedMap<V> = $crate::utils::FixedMap<{$name::LEN}, $name, V>;
+        type FixedMap<V> = $crate::utils::FixedMap<{<$name as $crate::utils::EnumKey>::LEN}, $name, V>;
     };
 }
 

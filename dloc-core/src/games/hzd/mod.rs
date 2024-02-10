@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     error::{DResult, Error},
-    utils::{enum_map, types::U8String, EnumKey},
+    utils::{enum_map, types::U8String},
 };
 
 use error::HZDError;
@@ -90,7 +90,7 @@ pub struct HZDLocal {
 }
 
 impl HZDLocal {
-    /// Creates a new HZDLocal by reading chunks from the reader
+    /// Creates a new [HZDLocal] by reading chunks from the reader
     /// until EOF is reached.
     ///
     /// ## Arguments:

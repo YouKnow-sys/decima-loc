@@ -2,12 +2,16 @@ use std::path::PathBuf;
 
 use anyhow::bail;
 use clap::{Parser, ValueHint};
-use dloc_core::{games::hzd::HZDLocal, logger::Logger, serialize::DecimaGroup};
+use dloc_core::{
+    games::{ds::DSLocal, hzd::HZDLocal},
+    logger::Logger,
+    serialize::DecimaGroup,
+};
 
 use crate::{logger::CliLogger, Game};
 
 use super::{
-    shared::{parse_hzd_languages, HzdAction, SerializeType},
+    shared::{parse_ds_languages, parse_hzd_languages, Action, SerializeType},
     utils,
 };
 
@@ -22,7 +26,7 @@ pub struct Group {
     /// Output file
     output: Option<PathBuf>,
     #[command(subcommand)]
-    action: HzdAction,
+    action: Action,
 }
 
 impl Group {
@@ -32,7 +36,7 @@ impl Group {
 
         match game {
             Game::Hzd => match self.action {
-                HzdAction::Export {
+                Action::Export {
                     languages,
                     add_language_names,
                 } => {
@@ -62,7 +66,7 @@ impl Group {
                         serialize_type,
                     )?;
                 }
-                HzdAction::Import {
+                Action::Import {
                     exported_file,
                     dont_skip: _,
                 } => {
@@ -77,7 +81,52 @@ impl Group {
                     )?;
                 }
             },
-            Game::Ds => unimplemented!(),
+            Game::Ds => match self.action {
+                Action::Export {
+                    languages,
+                    add_language_names,
+                } => {
+                    let output = self.output.unwrap_or_else(|| {
+                        self.input_dir
+                            .with_extension(self.serialize_type.extension())
+                    });
+
+                    let languages = parse_ds_languages(languages, &mut logger);
+
+                    if languages.is_empty() {
+                        bail!("Didn't found any valid Language.");
+                    }
+
+                    logger.info(format!("Selected languages: {languages:?}"));
+
+                    let serialize_type = self.serialize_type.to_core(Some(add_language_names));
+
+                    logger.info(format!(
+                        "Serializing locals into {:?} format.",
+                        self.serialize_type
+                    ));
+
+                    DecimaGroup::<DSLocal, _>::new(self.input_dir, logger)?.export(
+                        output,
+                        languages,
+                        serialize_type,
+                    )?;
+                }
+                Action::Import {
+                    exported_file,
+                    dont_skip: _,
+                } => {
+                    let output = self
+                        .output
+                        .unwrap_or_else(|| self.input_dir.with_extension("new"));
+
+                    DecimaGroup::<DSLocal, _>::new(self.input_dir, logger)?.import(
+                        exported_file,
+                        output,
+                        self.serialize_type.to_core(None),
+                    )?;
+                }
+            },
         }
 
         Ok(())

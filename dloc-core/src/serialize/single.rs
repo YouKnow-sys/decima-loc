@@ -17,7 +17,7 @@ use super::{private, SerializeType};
 /// specified.
 pub trait SerializeData<T>: Sized
 where
-    T: private::InternalDataSerializer + private::InternalTxtDataSerializer,
+    T: private::InternalDataSerializer + private::InternalPlainTextDataSerializer,
 {
     /// Serializes the data to the given output path in the specified
     /// serialization format. `languages` specifies the language to include.
@@ -56,7 +56,7 @@ where
 
 impl<T> SerializeData<T> for T
 where
-    T: private::InternalDataSerializer + private::InternalTxtDataSerializer,
+    T: private::InternalDataSerializer + private::InternalPlainTextDataSerializer,
 {
     fn serialize<L: AsRef<[<T>::Language]>, P: AsRef<Path>>(
         &self,

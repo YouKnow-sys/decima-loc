@@ -8,12 +8,16 @@ use std::{
 
 use anyhow::bail;
 use clap::{Parser, ValueHint};
-use dloc_core::{games::hzd::HZDLocal, logger::Logger, serialize::SerializeData};
+use dloc_core::{
+    games::{ds::DSLocal, hzd::HZDLocal},
+    logger::Logger,
+    serialize::SerializeData,
+};
 
 use crate::{logger::CliLogger, Game};
 
 use super::{
-    shared::{parse_hzd_languages, HzdAction, SerializeType},
+    shared::{parse_ds_languages, parse_hzd_languages, Action, SerializeType},
     utils,
 };
 
@@ -29,7 +33,7 @@ pub struct Single {
     /// Output file
     output: Option<PathBuf>,
     #[command(subcommand)]
-    action: HzdAction,
+    action: Action,
 }
 
 impl Single {
@@ -48,7 +52,7 @@ impl Single {
                 logger.good("Core file loaded.");
 
                 match self.action {
-                    HzdAction::Export {
+                    Action::Export {
                         languages,
                         add_language_names,
                     } => {
@@ -74,7 +78,7 @@ impl Single {
                         game.serialize(output, languages, serialize_type)?;
                         logger.good("Serialization finished successfully.")
                     }
-                    HzdAction::Import {
+                    Action::Import {
                         exported_file,
                         dont_skip,
                     } => {
@@ -108,7 +112,72 @@ impl Single {
                     }
                 }
             }
-            Game::Ds => unimplemented!(),
+            Game::Ds => {
+                logger.info("Loading the core file with HZD parser.");
+                let mut game = DSLocal::new(reader)?;
+                logger.good("Core file loaded.");
+
+                match self.action {
+                    Action::Export {
+                        languages,
+                        add_language_names,
+                    } => {
+                        let output = self.output.unwrap_or_else(|| {
+                            self.input_core
+                                .with_extension(self.serialize_type.extension())
+                        });
+
+                        let languages = parse_ds_languages(languages, &mut logger);
+
+                        if languages.is_empty() {
+                            bail!("Didn't found any valid Language.");
+                        }
+
+                        logger.info(format!("Selected languages: {languages:?}"));
+
+                        let serialize_type = self.serialize_type.to_core(Some(add_language_names));
+
+                        logger.info(format!(
+                            "Serializing locals into {:?} format.",
+                            self.serialize_type
+                        ));
+                        game.serialize(output, languages, serialize_type)?;
+                        logger.good("Serialization finished successfully.")
+                    }
+                    Action::Import {
+                        exported_file,
+                        dont_skip,
+                    } => {
+                        let output = self
+                            .output
+                            .unwrap_or_else(|| self.input_core.with_extension("new.core"));
+
+                        let mut hasher = DefaultHasher::new();
+                        game.hash(&mut hasher);
+                        let hash_before = hasher.finish();
+
+                        logger.info("Deserializing and updating local files.");
+                        game.deserialize_and_update(
+                            exported_file,
+                            self.serialize_type.to_core(None),
+                        )?;
+                        logger.good("Deerialization and update finished.");
+
+                        let mut hasher = DefaultHasher::new();
+                        game.hash(&mut hasher);
+                        let hash_after = hasher.finish();
+
+                        if !dont_skip && hash_before == hash_after {
+                            bail!("Nothing changed, write to disk cancelled.");
+                        }
+
+                        logger.info("Writing the updated core to output file.");
+                        let mut writer = BufWriter::new(File::create(output)?);
+                        game.write(&mut writer)?;
+                        logger.good("Write finished.");
+                    }
+                }
+            }
         }
 
         Ok(())
