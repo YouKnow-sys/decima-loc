@@ -42,7 +42,7 @@ pub enum Action {
     /// Export locals from input
     Export {
         /// Languages to export, pass 'all' if you want to export everything
-        #[arg(short, long, num_args = 1, default_values_t = ["all".to_owned()])]
+        #[arg(short, long, num_args = 1.., default_values_t = ["all".to_owned()], value_delimiter = ' ')]
         languages: Vec<String>,
         /// This option is only used when serialize-type is Txt
         #[arg(short, long)]
