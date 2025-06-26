@@ -9,7 +9,7 @@
 
 [![Build Status](https://github.com/YouKnow-sys/decima-loc/actions/workflows/rust.yml/badge.svg)](https://github.com/YouKnow-sys/decima-loc/actions?workflow=Rust%20CI)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
-[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/YouKnow-sys/ar-reshaper/blob/master/LICENSE)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/YouKnow-sys/decima-loc/blob/master/LICENSE)
 
 </div>
 
