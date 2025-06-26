@@ -1,12 +1,12 @@
 [package]
 name = "dloc-core"
-version = "0.2.4"
+version = "0.2.5"
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-binrw = "0.13"
-thiserror = "1.0"
+binrw = "0.15"
+thiserror = "2.0"
 walkdir = "2.4"
 serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = { version = "1.0", optional = true }

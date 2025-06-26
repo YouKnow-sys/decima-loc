@@ -264,8 +264,6 @@ use serde::{de::Visitor, Deserialize, Serialize};
 
 #[cfg(test)]
 mod test {
-    use std::usize;
-
     use super::*;
 
     enum_map!(
