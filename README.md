@@ -6,7 +6,7 @@
 </p>
 
 <div align="center">
-  
+
 [![Build Status](https://github.com/YouKnow-sys/decima-loc/actions/workflows/rust.yml/badge.svg)](https://github.com/YouKnow-sys/decima-loc/actions?workflow=Rust%20CI)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/YouKnow-sys/ar-reshaper/blob/master/LICENSE)
@@ -33,12 +33,12 @@
 - Support to export all or part of languages
 - Easy to use interface for non-technical users
 
-## Supported Games 
+## Supported Games
 
-| Game                     | Status        |
-|--------------------------|---------------|
-| Horizon Zero Dawn        | Supported ✅  |
-| Death Stranding          | Supported ✅  |
+| Game                     | Status        | Platforms   |
+|--------------------------|---------------|-------------|
+| Horizon Zero Dawn        | Supported ✅  | PC          |
+| Death Stranding          | Supported ✅  | PC and PS4  |
 
 ## Installation
 
@@ -52,7 +52,7 @@ Export text from Horizon Zero Dawn to JSON:
 decima-loc hzd single "path-to-core" export --format json
 ```
 
-Import translated text back into the game and create new core file: 
+Import translated text back into the game and create new core file:
 
 ```
 decima-loc hzd single "path-to-core" import "path-to-json" --format json
@@ -64,6 +64,6 @@ See `decima-loc --help` for full usage.
 
 Contributions are welcome! Please open an issue or PR.
 
-## License 
+## License
 
 This project is licensed under the MIT License - see [LICENSE](LICENSE) for more details.

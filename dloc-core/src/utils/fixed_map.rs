@@ -13,10 +13,6 @@ pub trait EnumKey: From<usize> + Into<usize> {
     const LEN: usize;
 }
 
-pub trait Array {
-    type List;
-}
-
 /// A fixed size map implementation that guarantees every possible key exists.
 /// Uses an enum as the key type to provide a finite key space.
 /// The map stores values in an array indexed by the enum keys.

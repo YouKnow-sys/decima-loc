@@ -5,7 +5,8 @@ use binrw::binrw;
 use super::FixedMap;
 use crate::{games::chunks::RuntimeSize, utils::types::U8String};
 
-pub const LOCALIZED_MAGIC: u64 = 0x31BE502435317445;
+pub const LOCALIZED_MAGIC_PC: u64 = 0x31BE502435317445;
+pub const LOCALIZED_MAGIC_PS4: u64 = 0xF9580B24C1A1E136;
 
 pub type Chunk = crate::games::chunks::Chunk<ChunkVariants>;
 
@@ -14,7 +15,7 @@ pub type Chunk = crate::games::chunks::Chunk<ChunkVariants>;
 #[br(import(magic: u64, size: u32))]
 #[derive(Hash)]
 pub enum ChunkVariants {
-    #[br(pre_assert(magic == LOCALIZED_MAGIC))]
+    #[br(pre_assert(magic == LOCALIZED_MAGIC_PC || magic == LOCALIZED_MAGIC_PS4))]
     Localized(Box<Localized>),
     /// Data variant for unknown chunk data.
     /// Stores raw binary data.

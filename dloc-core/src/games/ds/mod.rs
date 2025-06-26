@@ -12,7 +12,7 @@ use crate::{utils::enum_map, DResult, Error};
 
 use structures::Chunk;
 
-pub(crate) use structures::LOCALIZED_MAGIC;
+pub(crate) use structures::{LOCALIZED_MAGIC_PC, LOCALIZED_MAGIC_PS4};
 
 use error::DSError;
 use structures::ChunkVariants;

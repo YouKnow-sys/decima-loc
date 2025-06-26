@@ -56,7 +56,7 @@ pub fn detect_game<R: Read + Seek>(reader: &mut R) -> DResult<GameDetection> {
 
         match magic {
             hzd::LOCALIZED_MAGIC | hzd::CUTSCENE_MAGIC => hzd += 1,
-            ds::LOCALIZED_MAGIC => ds += 1,
+            ds::LOCALIZED_MAGIC_PC | ds::LOCALIZED_MAGIC_PS4 => ds += 1,
             _ => (),
         }
 

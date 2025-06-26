@@ -122,7 +122,7 @@ impl Single {
                 }
             }
             Game::Ds => {
-                logger.info("Loading the core file with HZD parser.");
+                logger.info("Loading the core file with DS parser.");
                 let mut game = DSLocal::new(reader)?;
                 logger.good("Core file loaded.");
 
