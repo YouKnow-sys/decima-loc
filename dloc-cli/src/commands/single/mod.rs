@@ -86,7 +86,7 @@ impl Single {
 
                         let serialize_type = sert.to_core(Some(add_language_names));
 
-                        logger.info(format!("Serializing locals into {:?} format.", sert));
+                        logger.info(format!("Serializing locals into {sert:?} format."));
                         game.serialize(output, languages, serialize_type)?;
                         logger.good("Serialization finished successfully.")
                     }
@@ -145,7 +145,7 @@ impl Single {
 
                         let serialize_type = sert.to_core(Some(add_language_names));
 
-                        logger.info(format!("Serializing locals into {:?} format.", sert));
+                        logger.info(format!("Serializing locals into {sert:?} format."));
                         game.serialize(output, languages, serialize_type)?;
                         logger.good("Serialization finished successfully.")
                     }

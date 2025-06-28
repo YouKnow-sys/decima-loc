@@ -83,8 +83,7 @@ impl Group {
                     let serialize_type = sert.to_core(Some(add_language_names));
 
                     logger.info(format!(
-                        "Serializing locals into {:?} format.",
-                        serialize_type
+                        "Serializing locals into {serialize_type:?} format."
                     ));
 
                     DecimaGroup::<HZDLocal, _>::new(self.input_dir, logger)?.export(
@@ -127,7 +126,7 @@ impl Group {
 
                     let serialize_type = sert.to_core(Some(add_language_names));
 
-                    logger.info(format!("Serializing locals into {:?} format.", sert));
+                    logger.info(format!("Serializing locals into {sert:?} format."));
 
                     DecimaGroup::<DSLocal, _>::new(self.input_dir, logger)?.export(
                         output,
